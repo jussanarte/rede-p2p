@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "headers.h"
-#include "tad_grafo_peers.c"
+#include "leave.h"
+#include "TAD_GRAFO_PEERS.c"
 
 extern graph* rede;
 extern peer* eu;

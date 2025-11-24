@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
 #include "menu.c"
-#include "tad_grafo_peers.c"
+
+#include "TAD_GRAFO_PEERS.c"
+
+
 
 // Variáveis globais (acessadas pelo join.c e menu.c)
 graph* rede = NULL;

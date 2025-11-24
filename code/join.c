@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
-#include "headers.h"
+#include "join.h"
 #include "udp_client.c"
-#include "tad_grafo_peers.c"
+#include "TAD_GRAFO_PEERS.c"
 
 // Variáveis globais vindas de p2pnet.c
 extern graph* rede;
@@ -49,7 +49,7 @@ void processPeersList(const char* resposta) {
 
 void join() {
     if (mySeq != -1) {
-        printf("Ja estas registado na rede.\n");
+        printf("Já estás registado na rede.\n");
         return;
     }
 

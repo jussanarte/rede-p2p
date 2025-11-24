@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "tad_grafo_peers.h"
+#include "TAD_GRAFO_PEERS.h"
 #define MAX_VERTICES 100
 #define MAX_PEERS 100
 
@@ -34,6 +34,8 @@ struct Graph {
     int numPeers;               // número de peers ativos
     peer peers[MAX_VERTICES];   // array de peers
 };
+
+
 
 // Cria um novo vizinho
 vizinho* createVizinho(int seq, const char* ip, int port) {
