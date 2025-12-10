@@ -6,11 +6,11 @@
 #include <sys/socket.h>
 
 #include "udp_client.h"
+char SERVER_IP[32] = "192.168.56.21";
+int SERVER_UDP_PORT = 58000;
 
-static char SERVER_IP[32] = "192.168.56.21";  // altera se necessário
-static int SERVER_UDP_PORT = 58000;
 
-// Função interna para enviar e receber mensagens UDP
+// FunÃ§Ã£o interna para enviar e receber mensagens UDP
 static int udp_send_recv(const char* msg, char* out, int outsize) {
     int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sockfd < 0) {

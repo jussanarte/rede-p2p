@@ -67,6 +67,17 @@ void addLigacao(peer* a, peer* b) {
     b->numInternos++;
 }
 
+
+
+int count_list(vizinho* v) {
+    int n = 0;
+    while (v) {
+        n++;
+        v = v->next;
+    }
+    return n;
+}
+
 // Remove vizinho de uma lista ligada
 void removeVizinho(vizinho** head, int seq) {
     if (!head || !(*head)) return;
@@ -90,12 +101,25 @@ void removeVizinho(vizinho** head, int seq) {
 void removeLigacao(peer* a, peer* b) {
     if (!a || !b) return;
 
+    // Remove b das listas de a
+    int beforeA = a->numExternos + a->numInternos;
     removeVizinho(&a->externos, b->seq);
-    if (a->numExternos > 0) a->numExternos--;
+    removeVizinho(&a->internos, b->seq);
 
+    // Remove a das listas de b
+    int beforeB = b->numExternos + b->numInternos;
+    removeVizinho(&b->externos, a->seq);
     removeVizinho(&b->internos, a->seq);
-    if (b->numInternos > 0) b->numInternos--;
+
+    // Recontar vizinhos (100% correto)
+    a->numExternos = count_list(a->externos);
+    a->numInternos = count_list(a->internos);
+    b->numExternos = count_list(b->externos);
+    b->numInternos = count_list(b->internos);
+
+    printf("Ligação removida: %d <-> %d\n", a->seq, b->seq);
 }
+
 
 // Imprime vizinhos de um peer
 void printVizinho(peer* p) {
@@ -175,6 +199,27 @@ peer* findPeer(graph* g, int seq) {
         if (g->peers[i].seq == seq) return &g->peers[i];
     }
     return NULL;
+}
+
+
+void limparPeersDesconhecidos(graph* g, const char* lst) {
+    for (int i = 0; i < g->numPeers; i++) {
+        peer* p = &g->peers[i];
+
+        if (p->seq == -1) continue;
+
+        // Se o seq NÃO aparece no LST → remover do grafo
+        char busca[32];
+        snprintf(busca, sizeof(busca), "#%d", p->seq);
+
+        if (strstr(lst, busca) == NULL) {
+            // remover todos os vizinhos primeiro
+            while (p->internos) removeVizinho(&p->internos, p->internos->seq);
+            while (p->externos) removeVizinho(&p->externos, p->externos->seq);
+
+            p->seq = -1; // marca como morto
+        }
+    }
 }
 
 

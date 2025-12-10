@@ -70,28 +70,34 @@ int main(int argc, char *argv[]) {
 		        sendto(sockfd, "NOK\n", 4, 0,
 		               (struct sockaddr*)&cliaddr, len);
 		    }
-		} else if (strncmp(buffer, "PEERS", 5) == 0) {
-		    int ativos = 0;
-		    for (int i = 0; i < server.numPeers; i++) {
-		        ServPeer* p = &server.peers[i];
-		        if (p->active == 1 ) {
-		            if (ativos == 0) {
-		                sendto(sockfd, "LST\n", 4, 0,
-		                       (struct sockaddr*)&cliaddr, len);
-		            }
-		            char linha[100];
-		            snprintf(linha, sizeof(linha), "%s:%d#%d\n",
-		                     p->ip, p->tcpPort, p->seq);
-		            sendto(sockfd, linha, strlen(linha), 0,
-		                   (struct sockaddr*)&cliaddr, len);
-		            ativos++;
-		        }
-		    }
-		    if (ativos == 0) {
-		        sendto(sockfd, "NOK\n", 4, 0,
-		               (struct sockaddr*)&cliaddr, len);
-		    }
-		} else if (strncmp(buffer, "UNR", 3) == 0) {
+				} else if (strncmp(buffer, "PEERS", 5) == 0) {
+			    char resposta[2048];
+			    int pos = 0;
+			
+			    // começa com LST\n
+			    pos += snprintf(resposta + pos, sizeof(resposta) - pos, "LST\n");
+			
+			    int ativos = 0;
+			    for (int i = 0; i < server.numPeers; i++) {
+			        ServPeer* p = &server.peers[i];
+			        if (p->active == 1) {
+			            pos += snprintf(resposta + pos, sizeof(resposta) - pos,
+			                            "%s:%d#%d\n", p->ip, p->tcpPort, p->seq);
+			            ativos++;
+			        }
+			    }
+			
+			    if (ativos == 0) {
+			        // nenhum peer → manda NOK
+			        sendto(sockfd, "NOK\n", 4, 0,
+			               (struct sockaddr*)&cliaddr, len);
+			    } else {
+			        // manda tudo de uma vez só
+			        sendto(sockfd, resposta, pos, 0,
+			               (struct sockaddr*)&cliaddr, len);
+			    }
+			}
+ else if (strncmp(buffer, "UNR", 3) == 0) {
 		    int seqNumber;
 		    if (sscanf(buffer, "UNR %d", &seqNumber) == 1) {
 		        int ok = removePeer(&server, seqNumber);
