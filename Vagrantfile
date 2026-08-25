@@ -19,7 +19,7 @@ Vagrant.configure("2") do |config|
       vb.customize opts
       vb.memory = "512"
     end
-    udp_config.vm.provision "shell", path: "bootstrap_web.sh"
+    udp_config.vm.provision "shell", path: "bootstrap_server.sh"
   end
 
   # Cliente Peer (TCP)
