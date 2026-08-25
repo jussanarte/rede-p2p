@@ -9,45 +9,15 @@
 
 **Objetivo:** Conseguir compilar o projeto com `make`.
 
-### Passo 0.1 — Criar Makefile
+> **Estado:** Esta fase já está concluída. O Makefile existe e os `#include` já foram corrigidos para usar `.h` em vez de `.c`.
 
-O Makefile deve compilar dois alvos independentes:
+### Passo 0.1 — Makefile
 
-```makefile
-CC = gcc
-CFLAGS = -Wall -Wextra -g
+O Makefile compila dois alvos independentes (ver ficheiro `Makefile` na raiz).
 
-all: p2pnet servidorUDP
+### Passo 0.2 — Includes corrigidos
 
-# Cliente P2P (usa TAD_GRAFO_PEERS e TAD_SERVIDORUDP para os structs)
-p2pnet: code/p2pnet.o code/menu.o code/join.o code/leave.o \
-        code/showneighbors.o code/tcp_client.o code/tcp_server.o \
-        code/udp_client.o code/TAD_GRAFO_PEERS.o
-	$(CC) $(CFLAGS) -o p2pnet $^
-
-# Servidor UDP
-servidorUDP: code/serverUDP.o code/TAD_SERVIDORUDP.o
-	$(CC) $(CFLAGS) -o servidorUDP $^
-
-code/%.o: code/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-clean:
-	rm -f code/*.o p2pnet servidorUDP
-```
-
-### Passo 0.2 — Resolver os `#include` de `.c`
-
-O código atual faz `#include "arquivo.c"` em vez de `#include "arquivo.h"`. Para compilar com Makefile, precisas:
-
-1. **Em cada `.c`**, substituir `#include "arquivo.c"` por `#include "arquivo.h"`
-2. **Garantir que cada `.h` declara todas as funções** que o `.c`对应 exports
-3. **Mover `extern` declarations** para os headers respetivos
-
-**Exemplo de correção em `p2pnet.c`:**
-```c
-// ANTES:
-#include "menu.c"
+Os `#include "arquivo.c"` foram substituídos por `#include "arquivo.h"` em todos os módulos.
 #include "TAD_GRAFO_PEERS.c"
 
 // DEPOIS:
@@ -59,7 +29,7 @@ O código atual faz `#include "arquivo.c"` em vez de `#include "arquivo.h"`. Par
 
 Adicionar funções em falta nos headers:
 
-**`TAD_GRAFO_PEERS.h`** — adicionar:
+**`graph.h`** — adicionar:
 ```c
 void limparPeersDesconhecidos(graph* g, const char* lst);
 int  count_list(vizinho* v);
@@ -72,9 +42,9 @@ int send_FRC(const char* ip, int port, int mySeq);
 
 ### Passo 0.4 — Remover include guards trocados
 
-- `TAD_GRAFO_PEERS.h`: adicionar `#ifndef TAD_GRAFO_PEERS_H` / `#define` / `#endif`
-- `TAD_GRAFO_PEERS.c`: remover `#ifndef TAD_GRAFO_PEERS_H` (está no sítio errado)
-- `TAD_SERVIDORUDP.h`: renomear `GRAFO_H` para `TAD_SERVIDORUDP_H`
+- `graph.h`: adicionar `#ifndef GRAPH_H` / `#define` / `#endif`
+- `graph.c`: remover `#ifndef TAD_GRAFO_PEERS_H` (está no sítio errado)
+- `peer_store.h`: renomear `GRAFO_H` para `PEER_STORE_H`
 
 ### Passo 0.5 — Testar compilação
 
@@ -94,7 +64,7 @@ Se compilar sem erros, avança para a Fase 1.
 
 ### Passo 1.1 — Adicionar ao menu
 
-Em `menu.c`, na função `processarOpcao()`:
+Em `client/menu.c`, na função `processarOpcao()`:
 
 ```c
 else if (strncmp(opcao, "release ", 8) == 0) {
@@ -121,7 +91,7 @@ void release(int seq);
 // release.c
 #include <stdio.h>
 #include "release.h"
-#include "TAD_GRAFO_PEERS.h"
+#include "graph.h"
 
 extern peer* eu;
 extern graph* rede;
@@ -164,7 +134,7 @@ void release(int seq) {
 
 ### Passo 2.1 — Criar estrutura de dados para identificadores
 
-Em `TAD_GRAFO_PEERS.c/h`, adicionar ao struct `Peer`:
+Em `client/graph.c/h`, adicionar ao struct `Peer`:
 
 ```c
 struct Peer {
@@ -182,7 +152,7 @@ g->peers[i].numIdentifiers = 0;
 
 ### Passo 2.2 — Criar funções de gestão
 
-Em `TAD_GRAFO_PEERS.c`, adicionar:
+Em `client/graph.c`, adicionar:
 
 ```c
 // Adiciona identificador ao peer
@@ -235,7 +205,7 @@ int hasIdentifier(peer* p, const char* id) {
 
 ### Passo 2.3 — Adicionar comandos ao menu
 
-Em `menu.c`, adicionar:
+Em `client/menu.c`, adicionar:
 
 ```c
 else if (strcmp(opcao, "list identifiers") == 0) {
@@ -317,7 +287,7 @@ void unpostIdentifier(const char* id) {
 
 ### Passo 3.1 — Criar protocolo QRY/FND/NOTFND no TCP
 
-O TCP server (`tcp_server.c`) precisa de processar mensagens `QRY`:
+O TCP server (`client/tcp_server.c`) precisa de processar mensagens `QRY`:
 
 ```c
 // No tcp_server_loop(), adicionar:
@@ -346,7 +316,7 @@ void searchIdentifier(const char* id);
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include "search.h"
-#include "TAD_GRAFO_PEERS.h"
+#include "graph.h"
 
 extern peer* eu;
 extern graph* rede;
@@ -483,7 +453,7 @@ else if (strncmp(opcao, "search ", 7) == 0) {
 
 ### Passo 4.1 — Adicionar variável global
 
-Em `p2pnet.c`:
+Em `client/main.c`:
 ```c
 int MAX_HC = 5; // valor por omissão
 ```
@@ -515,7 +485,7 @@ if (MAX_HC <= 0) {
 
 ### Passo 5.1 — Detetar perda de vizinhos externos
 
-No `tcp_server.c`, quando processa `UNL` ou deteta fecho de sessão TCP:
+No `client/tcp_server.c`, quando processa `UNL` ou deteta fecho de sessão TCP:
 
 ```c
 // Após remover ligação:
@@ -574,46 +544,38 @@ void reconectar(void) {
 
 ## Fase 6 — Limpeza e finalização
 
-### Passo 6.1 — Remover binários do repo
+> **Estado:** Esta fase já está parcialmente concluída (binários removidos, .vagrant removido, bootstrap_web.sh renomeado).
+
+### Passo 6.1 — Remover binários do repo ✅
 
 ```bash
 git rm --cached code/p2pnet code/p2pne code/servidorudp code/TAD_GRAFO_PEERS.h.gch
 ```
 
-### Passo 6.2 — Remover .vagrant/ do tracking
+### Passo 6.2 — Remover .vagrant/ do tracking ✅
 
 ```bash
 git rm -r --cached .vagrant/
 ```
 
-### Passo 6.3 — Atualizar .gitignore
+### Passo 6.3 — Atualizar .gitignore ✅
 
-Adicionar:
-```
+```bash
 *.gch
 ```
 
-### Passo 6.4 — Renomear bootstrap_web.sh
+### Passo 6.4 — Renomear bootstrap_web.sh ✅
 
 ```bash
 git mv bootstrap_web.sh bootstrap_server.sh
 ```
 
-### Passo 6.5 — Commits organizados
-
-Sugestão de commits (um por funcionalidade):
+### Passo 6.5 — Commits organizados ✅
 
 ```
 1. docs: adicionar README, ARCHITECTURE e ROADMAP
-2. build: adicionar Makefile e corrigir sistema de compilação
-3. fix: corrigir include guards e headers incompletos
-4. feat: adicionar comando release seqnumber
-5. feat: adicionar gestão de identificadores (post/unpost/list)
-6. feat: adicionar pesquisa de identificadores (search + QRY/FND/NOTFND)
-7. feat: adicionar argumento -h hc (hop count)
-8. feat: adicionar reconexão ao perder vizinhos externos
-9. chore: remover binários e .vagrant do tracking
-10. chore: renomear bootstrap_web.sh para bootstrap_server.sh
+2. chore: renomear bootstrap_web.sh para bootstrap_server.sh
+3. chore: atualizar .gitignore com binários, .gch e .vagrant
 ```
 
 ---
@@ -622,15 +584,15 @@ Sugestão de commits (um por funcionalidade):
 
 | Ficheiro | Fase | Alteração |
 |---|---|---|
-| `Makefile` | 0 | Criar do zero |
-| `code/*.c` | 0 | Substituir `#include "x.c"` por `#include "x.h"` |
-| `code/TAD_GRAFO_PEERS.h` | 0 | Adicionar guards, funções em falta |
-| `code/TAD_GRAFO_PEERS.c` | 0, 2 | Remover guard errado, adicionar identificadores |
-| `code/TAD_SERVIDORUDP.h` | 0 | Corrigir guard |
-| `code/tcp_client.h` | 0 | Adicionar `send_FRC` |
-| `code/menu.c` | 1, 2, 3 | Adicionar comandos novos |
-| `code/release.c/h` | 1 | Criar do zero |
-| `code/identifiers.c/h` | 2 | Criar do zero |
-| `code/search.c/h` | 3 | Criar do zero |
-| `code/p2pnet.c` | 0, 4 | Corrigir includes, adicionar `-h` |
-| `code/tcp_server.c` | 3, 5 | Adicionar QRY handler, reconexão |
+| `Makefile` | 0 | ✅ Criado |
+| `client/*.c` | 0 | ✅ Includes corrigidos (`#include "x.h"` em vez de `.c`) |
+| `client/graph.h` | 0 | ✅ Guards + funções em falta adicionadas |
+| `client/graph.c` | 0, 2 | ✅ Guard corrigido; identificadores por implementar |
+| `server/peer_store.h` | 0 | ✅ Guard corrigido |
+| `client/tcp_client.h` | 0 | ✅ `send_FRC` adicionado |
+| `client/menu.c` | 1, 2, 3 | Comandos novos por adicionar |
+| `client/release.c/h` | 1 | Criar do zero |
+| `client/identifiers.c/h` | 2 | Criar do zero |
+| `client/search.c/h` | 3 | Criar do zero |
+| `client/main.c` | 0, 4 | ✅ Includes corrigos; `-h` por adicionar |
+| `client/tcp_server.c` | 3, 5 | QRY handler + reconexão por adicionar |

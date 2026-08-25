@@ -1,24 +1,30 @@
+#ifndef GRAPH_H
+#define GRAPH_H
+
 typedef struct Graph graph;
 typedef struct Peer peer;
 typedef struct Vizinho vizinho;
 
-// ---------- protótipos das funções ----------
+// ---------- criação ----------
 
-// cria vizinho
 vizinho* createVizinho(int seq, const char* ip, int port);
 
-// a adiciona b como externo, b adiciona a como interno
-void addLigacao(peer* a, peer* b);
+// ---------- ligações ----------
 
-// operações básicas sobre vizinhos
+void addLigacao(peer* a, peer* b);
 void removeVizinho(vizinho** head, int seq);
 void removeLigacao(peer* a, peer* b);
 
-// imprime vizinhos de um peer (internos/externos)
+// ---------- impressão ----------
+
 void printVizinho(peer* p);
 
-// operações sobre o grafo
+// ---------- grafo ----------
+
 graph* createGraph(void);
 peer*  addPeer(graph* g, int seq, const char* ip, int tcpPort);
 peer*  findPeer(graph* g, int seq);
+void   limparPeersDesconhecidos(graph* g, const char* lst);
+int    count_list(vizinho* v);
 
+#endif

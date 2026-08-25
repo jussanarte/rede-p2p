@@ -7,18 +7,14 @@
 #include <sys/select.h>
 
 #include "tcp_server.h"
-#include "TAD_GRAFO_PEERS.c"
+#include "graph.h"
+#include "udp_client.h"
 
-// variáveis globais vindas do p2pnet/join
 extern graph* rede;
 extern peer* eu;
 extern int Nplus;
-// funções externas já existentes
-int do_PEERS(char *buffer, int max);
-void processPeersList(const char* resposta);
 
-// remove ligação entre dois peers
-void removeLigacao(peer* a, peer* b);
+void processPeersList(const char* resposta);
 
 int start_tcp_server(int lnkport) {
     int fd = socket(AF_INET, SOCK_STREAM, 0);

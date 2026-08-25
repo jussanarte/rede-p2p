@@ -1,5 +1,5 @@
-#ifndef GRAFO_H
-#define GRAFO_H
+#ifndef PEER_STORE_H
+#define PEER_STORE_H
 
 typedef struct ServPeer ServPeer;
 typedef struct PeerServer PeerServer;

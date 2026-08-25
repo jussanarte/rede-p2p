@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include "menu.h"
-#include "join.c"
-#include "leave.c"
-#include "showneighbors.c"
+#include "join.h"
+#include "leave.h"
+#include "graph.h"
+
+extern peer* eu;
 
 void mostrarMenu() {
     printf("\n===== P2PNET =====\n");

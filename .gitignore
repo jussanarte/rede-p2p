@@ -16,12 +16,6 @@ servidorUDP
 servidor_de_peers
 cliente
 
-# Binários em code/
-code/p2pnet
-code/p2pne
-code/servidorudp
-code/TAD_GRAFO_PEERS.h.gch
-
 # Logs
 *.log
 

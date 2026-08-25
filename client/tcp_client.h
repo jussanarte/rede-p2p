@@ -2,5 +2,6 @@
 #define TCP_CLIENT_H
 
 int send_LNK(const char* ip, int port, int mySeq);
+int send_FRC(const char* ip, int port, int mySeq);
 
 #endif

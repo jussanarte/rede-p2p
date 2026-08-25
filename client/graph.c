@@ -1,10 +1,7 @@
-#ifndef TAD_GRAFO_PEERS_H
-#define TAD_GRAFO_PEERS_H
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "TAD_GRAFO_PEERS.h"
+#include "graph.h"
 #define MAX_VERTICES 100
 #define MAX_PEERS 100
 
@@ -223,4 +220,4 @@ void limparPeersDesconhecidos(graph* g, const char* lst) {
 }
 
 
-#endif
+

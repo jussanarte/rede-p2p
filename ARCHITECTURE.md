@@ -36,7 +36,7 @@ O sistema compõe-se de dois programas independentes:
 
 ## Componentes
 
-### 1. Servidor UDP (`serverUDP.c` + `TAD_SERVIDORUDP.c/h`)
+### 1. Servidor UDP (`server/main.c` + `server/peer_store.c/h`)
 
 **Responsabilidade:** Gestão centralizada do registo de peers.
 
@@ -65,7 +65,7 @@ struct ServPeer {
 
 ---
 
-### 2. Peer — Cliente P2P (`p2pnet.c`)
+### 2. Peer — Cliente P2P (`client/main.c`)
 
 **Responsabilidade:** Interface de utilizador + multiplexação de eventos.
 
@@ -95,7 +95,7 @@ p2pnet.c (main)
 
 ---
 
-### 3. Módulo de Interface (`menu.c/h`)
+### 3. Módulo de Interface (`client/menu.c/h`)
 
 **Responsabilidade:** Apresentar opções e dispatchar comandos.
 
@@ -105,11 +105,11 @@ p2pnet.c (main)
 - `show neighbors` → Chama `printVizinho(eu)`
 - `exit` → Chama `leave()` + `exit(0)`
 
-**Nota:** `showneighbors.c` define `show_neighbors()` mas esta função **nunca é chamada** — `menu.c` usa diretamente `printVizinho()` de `TAD_GRAFO_PEERS.c`.
+**Nota:** `neighbors.c` define `show_neighbors()` mas esta função **nunca é chamada** — `menu.c` usa diretamente `printVizinho()` de `graph.c`.
 
 ---
 
-### 4. Módulo Join (`join.c/h`)
+### 4. Módulo Join (`client/join.c/h`)
 
 **Responsabilidade:** Implementar o protocolo de adesão à rede sobreposta.
 
@@ -144,7 +144,7 @@ join()
 
 ---
 
-### 5. Módulo Leave (`leave.c/h`)
+### 5. Módulo Leave (`client/leave.c/h`)
 
 **Responsabilidade:** Implementar o protocolo de abandono da rede sobreposta.
 
@@ -180,7 +180,7 @@ leave()
 
 ---
 
-### 6. Módulo TCP Client (`tcp_client.c/h`)
+### 6. Módulo TCP Client (`client/tcp_client.c/h`)
 
 **Responsabilidade:** Enviar pedidos LNK e FRC a outros peers.
 
@@ -201,7 +201,7 @@ Cliente                          Servidor
 
 ---
 
-### 7. Módulo TCP Server (`tcp_server.c/h`)
+### 7. Módulo TCP Server (`client/tcp_server.c/h`)
 
 **Responsabilidade:** Aceitar e processar pedidos LNK, FRC e UNL de outros peers.
 
@@ -236,7 +236,7 @@ tcp_server_loop()
 
 ---
 
-### 8. Módulo UDP Client (`udp_client.c/h`)
+### 8. Módulo UDP Client (`client/udp_client.c/h`)
 
 **Responsabilidade:** Comunicar com o servidor UDP.
 
@@ -249,7 +249,7 @@ tcp_server_loop()
 
 ---
 
-### 9. Estrutura de Dados — Grafo de Peers (`TAD_GRAFO_PEERS.c/h`)
+### 9. Estrutura de Dados — Grafo de Peers (`graph.c/h`)
 
 **Responsabilidade:** Manter a representação da rede sobreposta local.
 
@@ -287,7 +287,7 @@ Vizinho (lista ligada)
 
 ---
 
-### 10. Estrutura de Dados — Servidor de Peers (`TAD_SERVIDORUDP.c/h`)
+### 10. Estrutura de Dados — Servidor de Peers (`peer_store.c/h`)
 
 **Responsabilidade:** Gerir registo de peers no servidor.
 
@@ -302,25 +302,26 @@ Vizinho (lista ligada)
 ## Mapa de dependências (includes)
 
 ```
-p2pnet.c
-├── menu.c
-│   ├── join.c
-│   │   ├── udp_client.c
-│   │   ├── tcp_client.c
-│   │   ├── tcp_server.c
-│   │   └── TAD_GRAFO_PEERS.c
-│   ├── leave.c
-│   │   ├── TAD_GRAFO_PEERS.c
+client/main.c
+├── menu.h
+│   ├── join.h
+│   │   ├── udp_client.h
+│   │   ├── tcp_client.h
+│   │   ├── tcp_server.h
+│   │   └── graph.h
+│   ├── leave.h
+│   │   ├── graph.h
 │   │   └── tcp_server.h
-│   └── showneighbors.c
-│       └── TAD_GRAFO_PEERS.c
-└── TAD_GRAFO_PEERS.c
+│   └── graph.h
+├── graph.h
+├── tcp_server.h
+└── udp_client.h
 
-serverUDP.c
-└── TAD_SERVIDORUDP.c
+server/main.c
+└── peer_store.h
 ```
 
-**Problema:** Todos os `.c` são incluídos via `#include`, resultando em duas unidades de tradução monolíticas (uma para o cliente, outra para o servidor). Isto funciona mas impede compilação modular.
+Cada módulo tem o seu `.c` (implementação) e `.h` (protótipos). O Makefile compila cada `.c` separadamente e linka os objectos.
 
 ---
 

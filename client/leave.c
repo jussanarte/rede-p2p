@@ -7,13 +7,14 @@
 #include <netinet/in.h>
 
 #include "leave.h"
-#include "TAD_GRAFO_PEERS.c"
+#include "graph.h"
 #include "tcp_server.h"
+#include "udp_client.h"
 
 extern graph* rede;
 extern peer* eu;
 extern int mySeq;
-//int do_UNR(int seq);
+extern int listen_fd;
 
 
 void enviar_UNL(const char* ip, int port, int mySeq) {

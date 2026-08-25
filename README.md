@@ -110,18 +110,19 @@ rede-p2p/
 ├── Vagrantfile                     # Infraestrutura de VMs
 ├── bootstrap_client.sh             # Provisionamento do cliente (Wireshark, nmap)
 ├── bootstrap_server.sh             # Provisionamento do servidor UDP
-├── code/
-│   ├── p2pnet.c                    # Main do cliente P2P
-│   ├── serverUDP.c                 # Main do servidor UDP
+├── client/
+│   ├── main.c                      # Main do cliente P2P (select loop)
 │   ├── menu.c / menu.h             # Interface de utilizador
 │   ├── join.c / join.h             # Comando join
 │   ├── leave.c / leave.h           # Comando leave
-│   ├── showneighbors.c             # Comando show neighbors
+│   ├── neighbors.c / neighbors.h   # Comando show neighbors
 │   ├── tcp_client.c / tcp_client.h # Cliente TCP (LNK/FRC)
 │   ├── tcp_server.c / tcp_server.h # Servidor TCP (aceitar LNK/FRC/UNL)
 │   ├── udp_client.c / udp_client.h # Cliente UDP (REG/PEERS/UNR)
-│   ├── TAD_GRAFO_PEERS.c / .h      # Grafo de peers (estrutura de dados)
-│   └── TAD_SERVIDORUDP.c / .h      # Estrutura do servidor de peers
+│   └── graph.c / graph.h           # Grafo de peers (estrutura de dados)
+├── server/
+│   ├── main.c                      # Main do servidor UDP
+│   └── peer_store.c / peer_store.h # Gestão de registo de peers
 └── .gitignore
 ```
 

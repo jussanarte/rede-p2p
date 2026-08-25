@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "TAD_SERVIDORUDP.c"
+#include "peer_store.h"
 
 #include <strings.h>      // funções de manipulação de strings (bzero, etc.)
 #include <sys/types.h>    // tipos básicos usados em sockets

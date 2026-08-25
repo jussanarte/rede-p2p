@@ -11,8 +11,10 @@
 #include <termios.h>
 
 
-#include "menu.c"
-#include "TAD_GRAFO_PEERS.c"
+#include "menu.h"
+#include "graph.h"
+#include "tcp_server.h"
+#include "udp_client.h"
 
 // Variáveis globais (acessadas pelo join.c e menu.c)
 graph* rede = NULL;

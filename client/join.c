@@ -3,10 +3,10 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include "join.h"
-#include "udp_client.c"
-#include "tcp_client.c"
-#include "tcp_server.c"
-#include "TAD_GRAFO_PEERS.c"
+#include "udp_client.h"
+#include "tcp_client.h"
+#include "tcp_server.h"
+#include "graph.h"
 
 // Variáveis vindas do p2pnet
 extern graph* rede;

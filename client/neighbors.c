@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include "TAD_GRAFO_PEERS.c"
+#include "neighbors.h"
+#include "graph.h"
 
 extern peer* eu;
 
