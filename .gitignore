@@ -1,6 +1,5 @@
 # Arquivos de Compilação (Binários, Objetos e Módulos)
-# Ignora todos os executáveis, objetos e arquivos de biblioteca.
-*.o 
+*.o
 *.out
 *.exe
 *.bin
@@ -9,44 +8,42 @@
 *.obj
 *.lib
 *.a
+*.gch
 
-# Executáveis Comuns de C (Nome do Projeto)
-# Se você sempre usa um nome de executável específico, adicione-o.
-# Exemplo: p2pnet
+# Executáveis do projeto
 p2pnet
+servidorUDP
 servidor_de_peers
 cliente
 
-# Arquivos de Build Temporários e Logs
-# Logs gerados pelo programa
+# Binários em code/
+code/p2pnet
+code/p2pne
+code/servidorudp
+code/TAD_GRAFO_PEERS.h.gch
+
+# Logs
 *.log
 
-# Arquivos de Debug e Core Dumps
+# Debug
 core
 *.dwo
 *.elf
 *.gdb
 
-# Arquivos de Editores e IDEs (Muito Comuns)
-# Visual Studio Code (VS Code)
+# Editores e IDEs
 .vscode/
-
-# Vim/NeoVim
 *.swp
 *.swo
-
-# Nano
 *~
-
-# Emacs
-#*#
+*#*
 .#*
 *.bak
 
-# macOS / Linux / Windows
+# SO
 .DS_Store
 Thumbs.db
 
-# Vagrant e Virtualização (Mencionado nos documentos do projeto)
+# Vagrant
 .vagrant/
 Vagrantfile.bak
